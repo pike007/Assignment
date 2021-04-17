@@ -13,21 +13,31 @@ object Exercise1ReadFiles {
     import session.implicits._
 
     val parseMovieRow = (row: Row) => {
+
       val cols = row.getString(0).split(Constants.prop.getProperty("delimiter"))
-      Movie(cols(0).toInt, cols(1), cols(2))
+      val numCols = cols.length
+
+      Movie(if(numCols > 0) cols(0).toInt else 0, if(numCols > 1) cols(1) else "DEFAULT",
+        if(numCols > 2) cols(2) else "DEFAULT")
     }
 
     val parseRatingRow = (row: Row) => {
+
       val cols = row.getString(0).split(Constants.prop.getProperty("delimiter"))
-      Rating(cols(0).toInt, cols(1).toInt, cols(2).toInt, cols(2).toInt)
+      val numCols = cols.length
+
+      Rating(if(numCols > 0) cols(0).toInt else 0, if(numCols > 1) cols(1).toInt else 0,
+        if(numCols > 2) cols(2).toInt else 0, if(numCols > 3) cols(3).toInt else 0)
     }
 
-    val movies = session.read.option("delimiter", "\u0001").format("csv")
-      .load(Constants.prop.getProperty("input_movie_file_path"))
+    val loadCSV = (inputPath: String) => {
+      session.read.option("delimiter", "\u0001").format("csv").load(inputPath)
+    }
+
+    val movies = loadCSV(Constants.prop.getProperty("input_movie_file_path"))
       .map(x => parseMovieRow(x)).toDF().cache()
 
-    val ratings = session.read.option("delimiter", "\u0001").format("csv")
-      .load(Constants.prop.getProperty("input_ratings_file_path"))
+    val ratings = loadCSV(Constants.prop.getProperty("input_ratings_file_path"))
       .map(x => parseRatingRow(x)).toDF().cache()
 
     (movies, ratings)
