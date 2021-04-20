@@ -9,7 +9,7 @@ object Exercise2MovieRatings {
 
     val movieRatingJoin = movies.join(ratings,
       Seq("movieId"),
-      "left").cache()
+      "left")
 
     val movieRatings = movieRatingJoin.groupBy("movieId", "title", "genre").agg(
       max(col("rating")).as("maxMovieRating"),

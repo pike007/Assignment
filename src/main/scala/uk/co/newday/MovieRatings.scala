@@ -26,13 +26,10 @@ object MovieRatings {
       throw new FileNotFoundException("Properties file cannot be loaded")
     }
 
-
-
     val (movies, ratings) = Exercise1ReadFiles.execute(session)
     val movieRatings = Exercise2MovieRatings.execute(movies, ratings)
     val ratingWithRankTop3 = Exercise3UserTop3Movies.execute(movies, ratings)
     Exercise4WriteParquet.execute(movies, ratings, movieRatings, ratingWithRankTop3)
-
 
   }
 
